@@ -1,3 +1,5 @@
+#x= np.linspace(0, 13*np.pi, 4096)
+#204.8 pc cycle
 #Radius %Deviation
 30 0.7554011176131665
 50 0.7106172444587171
