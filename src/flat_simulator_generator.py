@@ -30,21 +30,33 @@ def create_circular_mask(h, w, col, row, radius):
     return mask #can be circular mask of any size
 
 def stripe(power, omega):
+    '''
+    Generates stripe pattern as seen in SUIT images.
+    '''
     x= np.linspace(0, omega*np.pi, 4096)
     sine_arr= np.ones((4096,4096))
     for i in range(sine_arr.shape[0]):
         y= power*np.sin(x-0.001*i)+1 #Make diagonal stripe pattern
         sine_arr[i]=sine_arr[i]*y
-    return(sine_arr)
+    return sine_arr
 
-def blur(data, kernel): #blurring function
+def blur(data, kernel):
+    '''
+    Blurring function
+    '''
     return(convolve(data, Box2DKernel(kernel), normalize_kernel=True))
 
 def dust(base, row, col, size):
+    '''
+    Adds synthetic dust spots to image.
+    '''
     base[row:row+size, col:col+size]= 500
-    return(base)
+    return base
 
 def run(filt_rad):
+    '''
+    Executable
+    '''
     large_scale_img= blur(small_scale_removed_img, filt_rad)
     std= np.std(large_scale_img[750:-750, 750:-750])
     mean= np.mean(large_scale_img[750:-750, 750:-750])
@@ -60,10 +72,12 @@ if __name__=='__main__':
     #NOISE#
     shot= np.random.poisson(base) #introducing random poission noise in flat illumination.
     prnu= np.random.normal(loc=1, scale=0.1, size=shape) #1% PRNU
-    read_noise= np.random.normal(loc= 1500, scale= 8, size= shape) #read noise. Central value (bias) of 1500pe. RMS error of 8e given as STDEV.
+    read_noise= np.random.normal(loc= 1500, scale= 8, size= shape) 
+    #read noise. Central value (bias) of 1500pe. RMS error of 8e given as STDEV.
     
     #IMG-GENERATION#
-    image_pe=(shot*prnu*stripe_image)+read_noise #flat image with shot noise, bias and read noise, multiplied with pattern.
+    image_pe=(shot*prnu*stripe_image)+read_noise 
+    #flat image with shot noise, bias and read noise, multiplied with pattern.
     bias_corrected_image= (image_pe/3)-500 #bias corrected, pe to ADU converted.
     
     #FILTERING#
@@ -78,9 +92,5 @@ if __name__=='__main__':
     print("#Filt_rad | % Deviation")
     with ProcessPoolExecutor() as executor:
         executor.map(run, filt_rad_list)
-    
-    
-    
-    
     
     
